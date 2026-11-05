@@ -86,6 +86,19 @@ export const NodeSettings = ({
           }}
         />
       </Section>
+      <Section title="Live status key">
+        <TextField
+          size="small"
+          placeholder="es. oxigeno-tech"
+          helperText="Chiave nel feed di stato live (vuoto = nessuno stato)"
+          value={modelItem.statusKey ?? ''}
+          onChange={(e) => {
+            const statusKey = e.target.value.trim();
+            if ((modelItem.statusKey ?? '') !== statusKey)
+              onModelItemUpdated({ statusKey: statusKey || undefined });
+          }}
+        />
+      </Section>
       <Section title="Description">
         <RichTextEditor
           value={modelItem.description}

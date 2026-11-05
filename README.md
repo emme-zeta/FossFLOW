@@ -1,9 +1,13 @@
 <div align="center">
  
 # FossFLOW
+
 ### Isometric Diagramming Tool
 
 </div>
+
+> **Fork emme-zeta**: aggiunge connessioni animate e stato live (nodi e linee colorati da un feed JSON). Vedi [docs/LIVE-STATUS.md](docs/LIVE-STATUS.md).
+
 
 
 
