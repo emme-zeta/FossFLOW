@@ -9,6 +9,12 @@ export const GlobalStyles = () => {
         div: {
           boxSizing: 'border-box'
         },
+        // Links inside node descriptions stay clickable even though labels
+        // ignore pointer events (so they don't block the canvas)
+        '.ql-editor a[href]': {
+          pointerEvents: 'auto',
+          cursor: 'pointer'
+        },
         '@keyframes fossflow-flow': {
           from: { strokeDashoffset: 0 },
           to: { strokeDashoffset: 'var(--fossflow-flow-distance, -40px)' }
