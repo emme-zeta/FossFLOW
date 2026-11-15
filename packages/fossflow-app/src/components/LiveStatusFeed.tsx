@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { setLiveStatus, setLiveStatusError, clearLiveStatus } from 'fossflow';
 
 const DEFAULT_URL = '/live-status.json';
@@ -57,6 +58,14 @@ export const LiveStatusFeed = () => {
           return;
         }
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        // Static hosts (e.g. Cloudflare Pages) answer unknown paths with the
+        // app's index.html: treat a non-JSON answer as "no feed configured".
+        const type = res.headers.get('content-type') || '';
+        if (!type.includes('json')) {
+          clearLiveStatus();
+          if (!cancelled) setState({ kind: 'idle' });
+          return;
+        }
         const json = await res.json();
         setLiveStatus(json);
         const source = json && typeof json.status === 'object' ? json.status : json;
@@ -80,13 +89,18 @@ export const LiveStatusFeed = () => {
   if (state.kind === 'idle') return null;
 
   const isError = state.kind === 'error';
-  return (
+  return createPortal(
     <div
       title={isError ? `Stato live non disponibile: ${state.message}` : 'Stato live attivo'}
       style={{
         position: 'fixed',
         left: 12,
-        bottom: 12,
+        bottom: 96,
+        top: 'auto',
+        right: 'auto',
+        width: 'max-content',
+        height: 'auto',
+        boxSizing: 'border-box',
         zIndex: 1000,
         display: 'flex',
         alignItems: 'center',
@@ -114,6 +128,7 @@ export const LiveStatusFeed = () => {
             hour: '2-digit',
             minute: '2-digit'
           })}`}
-    </div>
+    </div>,
+    document.body
   );
 };
