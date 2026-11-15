@@ -41,5 +41,9 @@ export const connectorSchema = z.object({
   style: z.enum(connectorStyleOptions).optional(),
   lineType: z.enum(connectorLineTypeOptions).optional(),
   showArrow: z.boolean().optional(),
+  // Animated flow along the connector (e.g. data moving towards a backup target)
+  animated: z.boolean().optional(),
+  // Key looked up in the live status feed (e.g. "backup:oltre->storagebox")
+  statusKey: z.string().max(200).optional(),
   anchors: z.array(anchorSchema)
 });

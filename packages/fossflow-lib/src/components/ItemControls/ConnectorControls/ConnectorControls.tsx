@@ -345,6 +345,33 @@ export const ConnectorControls = ({ id, embedded }: Props) => {
             }
             label="Show Arrow"
           />
+          <FormControlLabel
+            control={
+              <Switch
+                checked={!!connector.animated}
+                onChange={(e) => {
+                  updateConnector(connector.id, {
+                    animated: e.target.checked
+                  });
+                }}
+              />
+            }
+            label="Animated flow"
+          />
+        </Section>
+        <Section title="Live status key">
+          <TextField
+            size="small"
+            fullWidth
+            placeholder="es. backup:oltre->storagebox"
+            helperText="ok = verde · running = blu e animato · error = rosso, fermo"
+            value={connector.statusKey ?? ''}
+            onChange={(e) => {
+              updateConnector(connector.id, {
+                statusKey: e.target.value.trim()
+              });
+            }}
+          />
         </Section>
       <Section>
         <Box>

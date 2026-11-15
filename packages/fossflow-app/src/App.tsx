@@ -15,6 +15,7 @@ import ChangeLanguage from './components/ChangeLanguage';
 import { allLocales } from 'fossflow';
 import { useIconPackManager, IconPackName } from './services/iconPackManager';
 import './App.css';
+import { LiveStatusFeed } from './components/LiveStatusFeed';
 import { BrowserRouter, Route, Routes, useParams } from 'react-router-dom';
 
 // Load core isoflow icons (always loaded)
@@ -808,6 +809,7 @@ function EditorPage() {
             }
           }}
         />
+        <LiveStatusFeed />
       </div>
 
       {/* Save Dialog */}

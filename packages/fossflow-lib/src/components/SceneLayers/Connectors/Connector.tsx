@@ -13,6 +13,7 @@ import { useIsoProjection } from 'src/hooks/useIsoProjection';
 import { useConnector } from 'src/hooks/useConnector';
 import { useScene } from 'src/hooks/useScene';
 import { useColor } from 'src/hooks/useColor';
+import { useLiveStatus, LIVE_STATUS_COLORS } from 'src/stores/liveStatusStore';
 
 interface Props {
   connector: ReturnType<typeof useScene>['connectors'][0];
@@ -74,15 +75,22 @@ export const Connector = memo(({ connector: _connector, isSelected, groupIndex =
   const predefinedColor = useColor(_connector.color);
   const { currentView } = useScene();
   const connector = useConnector(_connector.id);
+  const liveStatus = useLiveStatus(connector?.statusKey || undefined);
 
   if (!connector) {
     return null;
   }
 
-  // Use custom color if provided, otherwise use predefined color
-  const color = connector.customColor
-    ? { value: connector.customColor }
-    : predefinedColor;
+  // Live status overrides the colour; otherwise custom colour, otherwise predefined
+  const color = liveStatus
+    ? { value: LIVE_STATUS_COLORS[liveStatus] }
+    : connector.customColor
+      ? { value: connector.customColor }
+      : predefinedColor;
+  // Flow animation: explicitly enabled, or the job is running right now.
+  // A failed link stops flowing so it is obvious at a glance.
+  const isFlowing =
+    liveStatus === 'error' ? false : !!connector.animated || liveStatus === 'running';
 
   if (!color) {
     return null;
@@ -264,6 +272,30 @@ export const Connector = memo(({ connector: _connector, isSelected, groupIndex =
             />
           </>
         ) : null}
+
+        {isFlowing && (
+          <g style={{ pointerEvents: 'none' }}>
+            {(offsetPaths ? [offsetPaths.path1, offsetPaths.path2] : [pathString]).map((points, idx) => {
+              return (
+                <polyline
+                  key={idx}
+                  className="fossflow-connector-flow"
+                  points={points}
+                  stroke={theme.palette.common.white}
+                  strokeWidth={connectorWidthPx * 0.55}
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeDasharray={`${connectorWidthPx * 0.6}, ${connectorWidthPx * 3.4}`}
+                  fill="none"
+                  style={{
+                    animation: `fossflow-flow ${liveStatus === 'running' ? 0.6 : 1.2}s linear infinite`,
+                    ['--fossflow-flow-distance' as string]: `-${connectorWidthPx * 4}px`
+                  }}
+                />
+              );
+            })}
+          </g>
+        )}
 
         {/* Circle for port-channel representation */}
         {lineType === 'DOUBLE_WITH_CIRCLE' && connector.path.tiles.length >= 2 && (() => {

@@ -11,6 +11,7 @@ import { ViewItem } from 'src/types';
 import { useModelItem } from 'src/hooks/useModelItem';
 import { ExpandableLabel } from 'src/components/Label/ExpandableLabel';
 import { RichTextEditor } from 'src/components/RichTextEditor/RichTextEditor';
+import { useLiveStatus, LIVE_STATUS_COLORS } from 'src/stores/liveStatusStore';
 
 interface Props {
   node: ViewItem;
@@ -20,6 +21,7 @@ interface Props {
 export const Node = memo(({ node, order }: Props) => {
   const modelItem = useModelItem(node.id);
   const { iconComponent } = useIcon(modelItem?.icon);
+  const liveStatus = useLiveStatus(modelItem?.statusKey || undefined);
 
   const position = useMemo(() => {
     return getTilePosition({
@@ -90,6 +92,43 @@ export const Node = memo(({ node, order }: Props) => {
             }}
           >
             {iconComponent}
+          </Box>
+        )}
+        {liveStatus && (
+          <Box
+            title={`${modelItem.statusKey}: ${liveStatus}`}
+            sx={{
+              position: 'absolute',
+              pointerEvents: 'none',
+              zIndex: 2,
+              left: PROJECTED_TILE_SIZE.width * 0.18,
+              top: -PROJECTED_TILE_SIZE.height * 0.9,
+              width: 34,
+              height: 34
+            }}
+          >
+            {(liveStatus === 'error' || liveStatus === 'running') && (
+              <Box
+                className="fossflow-status-pulse"
+                sx={{
+                  position: 'absolute',
+                  inset: 0,
+                  borderRadius: '50%',
+                  bgcolor: LIVE_STATUS_COLORS[liveStatus],
+                  animation: 'fossflow-pulse 1.6s ease-out infinite'
+                }}
+              />
+            )}
+            <Box
+              sx={{
+                position: 'absolute',
+                inset: 0,
+                borderRadius: '50%',
+                bgcolor: LIVE_STATUS_COLORS[liveStatus],
+                border: '4px solid white',
+                boxShadow: '0 1px 4px rgba(0,0,0,0.4)'
+              }}
+            />
           </Box>
         )}
       </Box>

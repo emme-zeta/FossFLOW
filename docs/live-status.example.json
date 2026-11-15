@@ -1,0 +1,10 @@
+{
+  "updated": "2026-11-05T17:00:00+01:00",
+  "status": {
+    "server-web": "ok",
+    "server-mail": "ok",
+    "storage": "ok",
+    "backup:server-web": "running",
+    "backup:server-mail": "error"
+  }
+}
